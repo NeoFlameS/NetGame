@@ -12,11 +12,11 @@ private:
 	int current_player;
 	WaitRoom *wa = NULL;
 
-	ObjectGroup GameObject;
+	ObjectGroup* GameObject;
 public :
 	HANDLE Recv_wait;
 
-	Sock_manager();
+	Sock_manager(ObjectGroup* ob);
 	bool ClientsockSet(SOCKET s);
 	int get_current_player();
 	void SetWaitRoom(WaitRoom *w);

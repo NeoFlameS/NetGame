@@ -1,17 +1,8 @@
 #include "SockManager.h"
 
-Sock_manager::Sock_manager() {
+Sock_manager::Sock_manager(ObjectGroup* ob) {
 	this->current_player = 0;
-	int i = 0;
-	for(i=0; i<30;i++){
-		this->GameObject.food[i]= Food();
-	}
-	for (i = 0; i < 4; i++) {
-		this->GameObject.obs[i] = Obstacle();
-	}
-	for (i = 0; i < 4; i++) {
-		this->GameObject.player[i] = Character();
-	}
+	this->GameObject = ob;
 }
 
 bool Sock_manager::ClientsockSet(SOCKET s) {
@@ -59,5 +50,5 @@ int Sock_manager::SendGameState(WaitRoom r) {
 }
 
 void Sock_manager::RecvClientCaracter(int id, CharacterBody* ch) {
-	this->GameObject.player[id].set_body(ch);
+	this->GameObject->player[id].set_body(ch);
 }

@@ -9,8 +9,9 @@
 
 int client_id = 0;
 int error_id = -1;
-Sock_manager manager = Sock_manager();
-WaitRoom server_waitroom;
+ObjectGroup server_ob;//서버의 오브젝트 그룹
+Sock_manager manager = Sock_manager(&server_ob);//서버의 오브젝트 그룹의 포인터를 속 매니저에 등록
+WaitRoom server_waitroom;//서버의 대기방 변수
 
 bool acp = TRUE;//인원 초과시 FALSE
 HANDLE GameThread;//게임 쓰레드의 시작여부
@@ -173,12 +174,18 @@ DWORD WINAPI SendRecvObjectInfo(LPVOID arg)
 	
 	//event 핸들 
 	//printf("시작");
-
-	retval = recvn(s,(char *)&rec_char,sizeof(rec_char),0);
+	while(1){
+	retval = recvn(s,(char *)&rec_char,sizeof(rec_char),0);//recv
 	cur_id = rec_char.get_id();
 	char_body = rec_char.get_body();
 
 	manager.RecvClientCaracter(cur_id,char_body);
+
+	//다른 클라리언트로 부터 다 받았을때 까지 wait 할 필요있음 
+
+	retval = send(s, (char*)&server_ob, sizeof(server_ob), 0);//send
+	}
+
 
 	return 0;
 }
