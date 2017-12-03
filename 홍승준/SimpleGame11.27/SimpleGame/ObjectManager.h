@@ -23,7 +23,8 @@ class Object_Manager {
 	WSADATA wsa;
 	SOCKADDR_IN serveraddr;
 	SOCKET sock;
-
+	WaitRoom wr;
+	bool gamewait; // 게임 시작 신호시 FALSE
 public:
 	Object_Manager();
 	void Update(float time);
@@ -32,7 +33,7 @@ public:
 	void SendGameData(SOCKET s);
 	void err_quit(char *msg);
 	void err_display(char *msg);
-
+	void RecvGameState();
 	//추가한 부분은 밑으로
 private:
 	WaitRoom r;

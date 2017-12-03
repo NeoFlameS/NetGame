@@ -136,7 +136,7 @@ int main(int argc, char **argv)
 	*/
 
 	Object_Manager Ob = Object_Manager();
-	
+	Ob.RecvGameState();
 
 
 	glutDisplayFunc(RenderScene);

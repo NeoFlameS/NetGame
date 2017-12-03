@@ -155,16 +155,22 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Character.h" />
+    <ClInclude Include="Food.h" />
     <ClInclude Include="LoadPng.h" />
     <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="Object_struct.h" />
+    <ClInclude Include="Obstacle.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Character.cpp" />
+    <ClCompile Include="Food.cpp" />
     <ClCompile Include="LoadPng.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
+    <ClCompile Include="Obstacle.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="SimpleGame.cpp" />
     <ClCompile Include="stdafx.cpp">

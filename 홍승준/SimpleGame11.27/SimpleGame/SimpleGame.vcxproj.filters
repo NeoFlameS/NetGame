@@ -39,6 +39,15 @@
     <ClInclude Include="Object_struct.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Character.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Food.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Obstacle.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -54,6 +63,15 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="ObjectManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Food.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Obstacle.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

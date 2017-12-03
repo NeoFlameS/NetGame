@@ -1,11 +1,3 @@
-﻿  Sock_manager.cpp
-  Obstacle.cpp
-c:\netgame\netgame\홍승준\multithreadtcpserver11.27\obstacle.cpp(13): warning C4244: '=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\netgame\netgame\홍승준\multithreadtcpserver11.27\obstacle.cpp(14): warning C4244: '=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  MultithreadTCPServer.cpp
-c:\netgame\netgame\홍승준\multithreadtcpserver11.27\multithreadtcpserver.cpp(101): warning C4101: 'hThread' :참조되지 않은 지역 변수입니다.
-  Food.cpp
-  Charactercpp.cpp
-  코드를 생성하고 있습니다...
-  MultithreadTCPServer.vcxproj -> C:\NetGame\NetGame\홍승준\MultithreadTCPServer11.27\Debug\MultithreadTCPServer.exe
-  MultithreadTCPServer.vcxproj -> C:\NetGame\NetGame\홍승준\MultithreadTCPServer11.27\Debug\MultithreadTCPServer.pdb (Partial PDB)
+﻿  MultithreadTCPServer.cpp
+  MultithreadTCPServer.vcxproj -> C:\Users\Neo\Desktop\MultithreadTCPServer11.27\Debug\MultithreadTCPServer.exe
+  MultithreadTCPServer.vcxproj -> C:\Users\Neo\Desktop\MultithreadTCPServer11.27\Debug\MultithreadTCPServer.pdb (Partial PDB)

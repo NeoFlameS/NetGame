@@ -16,7 +16,7 @@ WaitRoom server_waitroom;//서버의 대기방 변수
 bool acp = TRUE;//인원 초과시 FALSE
 HANDLE GameThread;//게임 쓰레드의 시작여부
 DWORD WINAPI SendRecvObjectInfo(LPVOID arg);
-void AcceptClientSet(SOCKET s);
+void AcceptClientSet(SOCKET s,HANDLE handle);
 // 소켓 함수 오류 출력 후 종료
 void err_quit(char *msg)
 {
@@ -113,13 +113,27 @@ int main(int argc, char *argv[])
 		/*printf("\n[TCP 서버] 클라이언트 접속: IP 주소=%s, 포트 번호=%d\n",
 			inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));*/
 
-		AcceptClientSet(client_sock);// 클라이언트 접속시 id 부여, 클래스에 셋
+		hThread = CreateThread(NULL, 0, SendRecvObjectInfo, (LPVOID)client_sock, 0, NULL);
+
+		AcceptClientSet(client_sock,hThread);// 클라이언트 접속시 id 부여, 클래스에 셋
 		manager.SendGameState(server_waitroom);// 게임 상태 전송
 
+		if (client_id == server_waitroom.max_player) {
+			acp = FALSE;
+		}
 		/*if (acp) {
 			 
 		}*/
+		
 	}
+	printf("신호상태\n");
+	SetEvent(GameThread);//게임 시작, 데이터 송수신 쓰레드를 시작한다
+
+	bool running = TRUE;
+	while (TRUE) {
+		//게임 루프
+	}
+
 
 	// closesocket()
 	closesocket(listen_sock);
@@ -129,10 +143,10 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-void AcceptClientSet(SOCKET s) {
+void AcceptClientSet(SOCKET s,HANDLE handle) {
 	
 	int retval;
-	acp = manager.ClientsockSet(s);//아직 인원이 덜 찼을때는 acp -> TRUE
+	acp = manager.ClientsockSet(s, handle);//아직 인원이 덜 찼을때는 acp -> TRUE
 	
 	if (!acp) {//인원초과
 		retval = send(s, (char*)&error_id, sizeof(int), 0);//인원초과 시 아이디에 -1 전송
@@ -168,22 +182,34 @@ DWORD WINAPI SendRecvObjectInfo(LPVOID arg)
 	int cur_id;
 	Character rec_char = Character();//캐릭터를 받아올 버퍼용 변수 선언
 	CharacterBody* char_body;
-	//printf("대기중\n");
+	printf("대기중\n");
 
 	WaitForSingleObject(GameThread,INFINITE);
 	
 	//event 핸들 
-	//printf("시작");
+	
 	while(1){
+	printf("시작");
 	retval = recvn(s,(char *)&rec_char,sizeof(rec_char),0);//recv
+	if (retval == SOCKET_ERROR) {
+		err_display("send()");
+	}
+
 	cur_id = rec_char.get_id();
 	char_body = rec_char.get_body();
 
 	manager.RecvClientCaracter(cur_id,char_body);
+	manager.SetEventthis(cur_id);
 
 	//다른 클라리언트로 부터 다 받았을때 까지 wait 할 필요있음 
+	manager.SendWait();//WaitForMultipleObjects() 를 실행하는 메소드 호출
 
 	retval = send(s, (char*)&server_ob, sizeof(server_ob), 0);//send
+	if (retval == SOCKET_ERROR) {
+		err_display("send()");}
+	//send 이후에 리셋
+	manager.ResetEventthis(cur_id);
+
 	}
 
 

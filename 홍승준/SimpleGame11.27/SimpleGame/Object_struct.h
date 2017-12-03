@@ -4,9 +4,9 @@
 #define MAX_OBSTACLE	500
 #define MAX_FOOD		500
 #define LOCATE_SIZE     10
-/*#include "Character.h"
+#include "Character.h"
 #include "Obstacle.h"
-#include "Food.h"*/
+#include "Food.h"
 
 
 struct WaitRoom
@@ -18,8 +18,8 @@ struct WaitRoom
 
 
 struct ObjectGroup
-{/*
+{
  Character		player[MAX_CHARACTER];
  Obstacle		obs[MAX_OBSTACLE];
- Food			food[MAX_FOOD];*/
+ Food			food[MAX_FOOD];
 };

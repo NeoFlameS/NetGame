@@ -9,7 +9,7 @@ int recvn(SOCKET s, char *buf, int len, int flags) {
 	char *ptr = buf;
 	int left = len;
 
-
+	
 	while (left > 0) {
 		received = recv(s, ptr, left, flags);
 		if (received == SOCKET_ERROR) {
@@ -38,7 +38,6 @@ WaitRoom Object_Manager::ConnectWaitRoom(SOCKET server) {
 	}
 
 	
-
 	printf("%d\n", Client_ID);
 
 	if (Client_ID == 0) { // 처음 접속시 방설정  
@@ -58,7 +57,7 @@ WaitRoom Object_Manager::ConnectWaitRoom(SOCKET server) {
 Object_Manager::Object_Manager()
 {
 	//all_object.player;
-
+	this->gamewait =  TRUE;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) exit(1);
 
 	// socket()
@@ -96,6 +95,16 @@ void Object_Manager::SendGameData(SOCKET s)
 	return;
 }
 
+void Object_Manager::RecvGameState() {
+	retval = recvn(this->sock,(char *)&wr,sizeof(wr),0);
+	if (retval == SOCKET_ERROR) {
+		err_quit("recv()");
+	}
+	if (wr.current_player == wr.max_player) {
+		this->gamewait = FALSE;
+		printf("시작");
+	}
+}
 
 void Object_Manager::err_quit(char *msg)
 {
