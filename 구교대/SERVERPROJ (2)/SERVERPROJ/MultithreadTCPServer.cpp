@@ -10,52 +10,52 @@
 #define WAITROOMBUFSIZE 4
 int client_id = 0;
 int error_id = -1;
-ObjectGroup* server_ob;//¼­¹öÀÇ ¿ÀºêÁ§Æ® ±×·ì 
-Sock_manager manager = Sock_manager(server_ob);//¼­¹öÀÇ ¿ÀºêÁ§Æ® ±×·ìÀÇ Æ÷ÀÎÅÍ¸¦ ¼Ó ¸Å´ÏÀú¿¡ µî·Ï
-WaitRoom server_waitroom;//¼­¹öÀÇ ´ë±â¹æ º¯¼ö
+ObjectGroup* server_ob;//ì„œë²„ì˜ ì˜¤ë¸Œì íŠ¸ ê·¸ë£¹ 
+Sock_manager manager = Sock_manager(server_ob);//ì„œë²„ì˜ ì˜¤ë¸Œì íŠ¸ ê·¸ë£¹ì˜ í¬ì¸í„°ë¥¼ ì† ë§¤ë‹ˆì €ì— ë“±ë¡
+WaitRoom server_waitroom;//ì„œë²„ì˜ ëŒ€ê¸°ë°© ë³€ìˆ˜
 
-bool acp = TRUE;//ÀÎ¿ø ÃÊ°ú½Ã FALSE
-HANDLE GameThread;//°ÔÀÓ ¾²·¹µåÀÇ ½ÃÀÛ¿©ºÎ
+bool acp = TRUE;//ì¸ì› ì´ˆê³¼ì‹œ FALSE
+HANDLE GameThread;//ê²Œì„ ì“°ë ˆë“œì˜ ì‹œì‘ì—¬ë¶€
 DWORD WINAPI SendRecvObjectInfo(LPVOID arg);
 void AcceptClientSet(SOCKET s);
 void AcceptClientGameObject(SOCKET s, ObjectGroup* GameObject);
 
 
-//11.28 Ãß°¡
-int  globalvarObjPosNumberX = 0; //XÁÂÇ¥¹è¿­¼ıÀÚ ¹è¿­ 0ºÎÅÍ ³Ö¾îÁÜ °´Ã¼°¡»ı¼º(res,obs)µÇ¸é Àü¿ªº¯¼ö°ª Áõ°¡.
-int  globalvarObjPosNumberY = 0; //YÁÂÇ¥¹è¿­¼ıÀÚ ¹è¿­ 0ºÎÅÍ ³Ö¾îÁÜ °´Ã¼°¡»ı¼º(res,obs)µÇ¸é Àü¿ªº¯¼ö°ª Áõ°¡.
-int  globalTime = 0; // ±Û·Î¹úÅ¸ÀÓ food »ı¼ºÀÚ¿¡ ÀÎÀÚ°ªÇÊ¿äÇØ¼­. ¾ÆÁ÷ Å¸ÀÓÀ»¾î¶»°ÔÇÒÁö ¸ğ¸£°ÚÀ½. ±Û·Î¹ú Å¸ÀÓÀÌ µé¾î°¥ÀÚ¸®.
-int x[1000];  //°´Ã¼°¡ ¹ŞÀ» ÁÂÇ¥ ¹è¿­.
-int y[1000];  //°´Ã¼°¡ ¹ŞÀ» ÁÂÇ¥ ¹è¿­.
-int globalfoodIndex;	//FOOD¼ıÀÚ
-int globalResourceIndex; //OBJECT¼ıÀÚ
-int globalCharacterIndex; //Ä³¸¯ÅÍ¼ıÀÚ
-void ObjectCreate(int res, int obs, ObjectGroup* server_ob); //ÀÚ¿ø°ú Àå¾Ö¹°À» »ı¼ºÇØ¾ßÇÏ´Â °³¼ö
-void InitObject(ObjectGroup* server_ob); //¿ÀºêÁ§Æ® »ı¼º.
-bool ObjStateCheck(ObjectGroup* server_ob); //¿ÀºêÁ§Æ®»óÅÂ ¿ÀºêÁ§Æ®ºÎÁ·ÇÒ½Ã »ı¼º.
-void MakeRandomPos(void);	//·£´ıÁÂÇ¥»ı¼º.
+//11.28 ì¶”ê°€
+int  globalvarObjPosNumberX = 0; //Xì¢Œí‘œë°°ì—´ìˆ«ì ë°°ì—´ 0ë¶€í„° ë„£ì–´ì¤Œ ê°ì²´ê°€ìƒì„±(res,obs)ë˜ë©´ ì „ì—­ë³€ìˆ˜ê°’ ì¦ê°€.
+int  globalvarObjPosNumberY = 0; //Yì¢Œí‘œë°°ì—´ìˆ«ì ë°°ì—´ 0ë¶€í„° ë„£ì–´ì¤Œ ê°ì²´ê°€ìƒì„±(res,obs)ë˜ë©´ ì „ì—­ë³€ìˆ˜ê°’ ì¦ê°€.
+int  globalTime = 0; // ê¸€ë¡œë²Œíƒ€ì„ food ìƒì„±ìì— ì¸ìê°’í•„ìš”í•´ì„œ. ì•„ì§ íƒ€ì„ì„ì–´ë–»ê²Œí• ì§€ ëª¨ë¥´ê² ìŒ. ê¸€ë¡œë²Œ íƒ€ì„ì´ ë“¤ì–´ê°ˆìë¦¬.
+int x[1000];  //ê°ì²´ê°€ ë°›ì„ ì¢Œí‘œ ë°°ì—´.
+int y[1000];  //ê°ì²´ê°€ ë°›ì„ ì¢Œí‘œ ë°°ì—´.
+int globalfoodIndex;	//FOODìˆ«ì
+int globalResourceIndex; //OBJECTìˆ«ì
+int globalCharacterIndex; //ìºë¦­í„°ìˆ«ì
+void ObjectCreate(int res, int obs, ObjectGroup* server_ob); //ìì›ê³¼ ì¥ì• ë¬¼ì„ ìƒì„±í•´ì•¼í•˜ëŠ” ê°œìˆ˜
+void InitObject(ObjectGroup* server_ob); //ì˜¤ë¸Œì íŠ¸ ìƒì„±.
+bool ObjStateCheck(ObjectGroup* server_ob); //ì˜¤ë¸Œì íŠ¸ìƒíƒœ ì˜¤ë¸Œì íŠ¸ë¶€ì¡±í• ì‹œ ìƒì„±.
+void MakeRandomPos(void);	//ëœë¤ì¢Œí‘œìƒì„±.
 void err_quit(char *msg);
 void err_display(char *msg);
-//11.28 Ãß°¡
+//11.28 ì¶”ê°€
 void InitObject(ObjectGroup* server_ob)
 {
-	//Ä³¸¯ÅÍÇÑ°³ ÃÊ±âÈ­
+	//ìºë¦­í„°í•œê°œ ì´ˆê¸°í™”
 	POINT pt;
 	pt.x = x[globalvarObjPosNumberX++];
 	pt.y = y[globalvarObjPosNumberY++];
-	//Æ÷ÀÎÆ®´Â ±×³É ¿øÇÏ´ÂÀ§Ä¡Àâ°í ³Ö¾îµµµÊ Ä³¸¯ÅÍ´Â 
+	//í¬ì¸íŠ¸ëŠ” ê·¸ëƒ¥ ì›í•˜ëŠ”ìœ„ì¹˜ì¡ê³  ë„£ì–´ë„ë¨ ìºë¦­í„°ëŠ” 
 	Character* pCharacter = new Character(globalCharacterIndex, pt);
-	ObjectCreate(45, 45, server_ob);// ¿øÇÏ´Â°³¼ö³Ö±â.ÀÏ´Ü 99,99³ÖÀ½
-	server_ob->player[globalCharacterIndex++] = *pCharacter; //4°³¹è¿­¿¡ ³Ö¾îÁØ´Ù.
+	ObjectCreate(15, 15, server_ob);// ì›í•˜ëŠ”ê°œìˆ˜ë„£ê¸°.ì¼ë‹¨ 99,99ë„£ìŒ
+	server_ob->player[globalCharacterIndex++] = *pCharacter; //4ê°œë°°ì—´ì— ë„£ì–´ì¤€ë‹¤.
 	server_ob->playerCnt = globalCharacterIndex;
 }
 
 
-//11.28 Ãß°¡
+//11.28 ì¶”ê°€
 void ObjectCreate(int res, int obs, ObjectGroup* server_ob)
 {
-	MakeRandomPos();//Æ÷Áö¼Ç·£´ıÀ¸·Î
-					//°´Á¦ÁÂÇ¥(Áßº¹µÇÁö¾Ê´Â ·£´ı°ªÀ») point(ÁÂÇ¥)¿¡ Áı¾î³Ö¾îÁÜ 
+	MakeRandomPos();//í¬ì§€ì…˜ëœë¤ìœ¼ë¡œ
+					//ê°ì œì¢Œí‘œ(ì¤‘ë³µë˜ì§€ì•ŠëŠ” ëœë¤ê°’ì„) point(ì¢Œí‘œ)ì— ì§‘ì–´ë„£ì–´ì¤Œ 
 	POINT pt;
 	for (int i = 0; i < res; i++)
 	{
@@ -64,8 +64,8 @@ void ObjectCreate(int res, int obs, ObjectGroup* server_ob)
 		POINT PointInsertres;
 		PointInsertres.x = pt.x;
 		PointInsertres.y = pt.y;
-		Food* pRes = new Food(globalTime, PointInsertres);
-		server_ob->food[globalfoodIndex++] = *pRes; //500°³¹è¿­¿¡ ³Ö¾îÁØ´Ù.
+		//Food* pRes = new Food(globalTime, PointInsertres);
+		server_ob->food[globalfoodIndex++] = *new Food(globalTime, PointInsertres); //500ê°œë°°ì—´ì— ë„£ì–´ì¤€ë‹¤.
 		server_ob->foodCnt = globalfoodIndex;
 	}
 	for (int i = 0; i < obs; i++)
@@ -75,57 +75,57 @@ void ObjectCreate(int res, int obs, ObjectGroup* server_ob)
 		POINT PointInsertObs;
 		PointInsertObs.x = pt.x;
 		PointInsertObs.y = pt.y;
-		Obstacle* pObs = new Obstacle(globalTime, PointInsertObs);
-		server_ob->obs[globalResourceIndex++] = *pObs;//500°³¹è¿­¿¡ ³Ö¾îÁØ´Ù.
+		//Obstacle* pObs = new Obstacle(globalTime, PointInsertObs);
+		server_ob->obs[globalResourceIndex++] = *new Obstacle(globalTime, PointInsertObs);//500ê°œë°°ì—´ì— ë„£ì–´ì¤€ë‹¤.
 		server_ob->obsCnt = globalResourceIndex;
 	}
 }
 
 
-//11.28 Ãß°¡
+//11.28 ì¶”ê°€
 bool ObjStateCheck(ObjectGroup* server_ob)
 {
-	int foodCnt = 10;//¼³Á¤ÇÑ °³¼öº¸´ÙÀÛÀ¸¸é  ObjectCreateºÎ¸¥´Ù.
-	int fObstacleCnt = 10; //¼³Á¤ÇÑ °³¼öº¸´ÙÀÛÀ¸¸é  ObjectCreateºÎ¸¥´Ù.
+	int foodCnt = 10;//ì„¤ì •í•œ ê°œìˆ˜ë³´ë‹¤ì‘ìœ¼ë©´  ObjectCreateë¶€ë¥¸ë‹¤.
+	int fObstacleCnt = 10; //ì„¤ì •í•œ ê°œìˆ˜ë³´ë‹¤ì‘ìœ¼ë©´  ObjectCreateë¶€ë¥¸ë‹¤.
 	if (server_ob->foodCnt < foodCnt)
 	{
-		//¿ø·¡ÀÖ´ø ·£´ı°ª ¹è¿­°³¼ö¿¡¼­ cnt°³¼ö¸¸Å­ »©ÁÜ
-		//100°³ 50°³»ç¶óÁü 50°³¸¸Å­ •û¼­ ³­¼ö 0À¸·Î ÃÊ±âÈ­ 
+		//ì›ë˜ìˆë˜ ëœë¤ê°’ ë°°ì—´ê°œìˆ˜ì—ì„œ cntê°œìˆ˜ë§Œí¼ ë¹¼ì¤Œ
+		//100ê°œ 50ê°œì‚¬ë¼ì§ 50ê°œë§Œí¼ Â•å‘¼ ë‚œìˆ˜ 0ìœ¼ë¡œ ì´ˆê¸°í™” 
 		for (int i = globalvarObjPosNumberX; i < globalfoodIndex - foodCnt; i--)
 		{
 			globalvarObjPosNumberX--;
 			globalvarObjPosNumberY--;
 			globalfoodIndex--;
-			x[globalvarObjPosNumberX] = 0; //·£´ı°ª 0À¸·Î ÃÊ±âÈ­
+			x[globalvarObjPosNumberX] = 0; //ëœë¤ê°’ 0ìœ¼ë¡œ ì´ˆê¸°í™”
 			y[globalvarObjPosNumberX] = 0;
-			MakeRandomPos(); // 0ÃÊ±âÈ­µÈ°Å ´Ù½Ã ·£´ı°ªÀ¸·Î Ã¤¿ò
+			MakeRandomPos(); // 0ì´ˆê¸°í™”ëœê±° ë‹¤ì‹œ ëœë¤ê°’ìœ¼ë¡œ ì±„ì›€
 		}
-		ObjectCreate(30, 0, server_ob); //°³¼ö¸¸Å­´Ã¸².
+		ObjectCreate(10, 0, server_ob); //ê°œìˆ˜ë§Œí¼ëŠ˜ë¦¼.
 	}
 	if (server_ob->obsCnt < fObstacleCnt)
 	{
-		//¿ø·¡ÀÖ´ø ·£´ı°ª ¹è¿­°³¼ö¿¡¼­ cnt°³¼ö¸¸Å­ »©ÁÜ
-		//100°³ 50°³»ç¶óÁü 50°³¸¸Å­ •û¼­ ³­¼ö 0À¸·Î ÃÊ±âÈ­ 
+		//ì›ë˜ìˆë˜ ëœë¤ê°’ ë°°ì—´ê°œìˆ˜ì—ì„œ cntê°œìˆ˜ë§Œí¼ ë¹¼ì¤Œ
+		//100ê°œ 50ê°œì‚¬ë¼ì§ 50ê°œë§Œí¼ Â•å‘¼ ë‚œìˆ˜ 0ìœ¼ë¡œ ì´ˆê¸°í™” 
 		for (int i = globalvarObjPosNumberX; i < globalResourceIndex - fObstacleCnt; i--)
 		{
 			globalvarObjPosNumberX--;
 			globalvarObjPosNumberY--;
 			globalResourceIndex--;
-			x[globalvarObjPosNumberX] = 0; //·£´ı°ª 0À¸·Î ÃÊ±âÈ­
-			y[globalvarObjPosNumberX] = 0; //·£´ı°ª 0À¸·Î ÃÊ±âÈ­
-			MakeRandomPos(); // 0ÃÊ±âÈ­µÈ°Å ´Ù½Ã ·£´ı°ªÀ¸·Î Ã¤¿ò
+			x[globalvarObjPosNumberX] = 0; //ëœë¤ê°’ 0ìœ¼ë¡œ ì´ˆê¸°í™”
+			y[globalvarObjPosNumberX] = 0; //ëœë¤ê°’ 0ìœ¼ë¡œ ì´ˆê¸°í™”
+			MakeRandomPos(); // 0ì´ˆê¸°í™”ëœê±° ë‹¤ì‹œ ëœë¤ê°’ìœ¼ë¡œ ì±„ì›€
 		}
-		ObjectCreate(0, 30, server_ob); //°³¼ö¸¸Å­´Ã¸².
+		ObjectCreate(0, 10, server_ob); //ê°œìˆ˜ë§Œí¼ëŠ˜ë¦¼.
 	}
 
-	//°¢°¢ÀÇ °´Ã¼ÀÇ ½ºÅ×ÀÌÆ®´Â ¹è¿­·Î ·çÇÁµ¹·Á¼­ Ã£À½ ¾ÆÁ÷Àß¸ğ¸£°ÚÀ½
-	//3°³ÀÌ»óÀÇ Ä³¸¯ÅÍ¸öÃ¼ÀÇ ±æÀÌ°¡ 0 ÀÌµÇ¸é ¸®ÅÏfalseÇÑ´Ù
-	//0,1,2°¡ »ì¾Æ³²À»°æ¿ì¸¦ ³Ö¾î¼­.
+	//ê°ê°ì˜ ê°ì²´ì˜ ìŠ¤í…Œì´íŠ¸ëŠ” ë°°ì—´ë¡œ ë£¨í”„ëŒë ¤ì„œ ì°¾ìŒ ì•„ì§ì˜ëª¨ë¥´ê² ìŒ
+	//3ê°œì´ìƒì˜ ìºë¦­í„°ëª¸ì²´ì˜ ê¸¸ì´ê°€ 0 ì´ë˜ë©´ ë¦¬í„´falseí•œë‹¤
+	//0,1,2ê°€ ì‚´ì•„ë‚¨ì„ê²½ìš°ë¥¼ ë„£ì–´ì„œ.
 	for (int i = 0; i < globalCharacterIndex; i++)
 	{
 		int iTempCnt = 0;
 		if ((server_ob->player[i].getbodylength() == 0))
-			iTempCnt++;//3¸íÀÌ0ÀÌ¸é 
+			iTempCnt++;//3ëª…ì´0ì´ë©´ 
 		if (iTempCnt == 3)
 		{
 			return false;
@@ -135,34 +135,34 @@ bool ObjStateCheck(ObjectGroup* server_ob)
 
 
 
-//11.28 Ãß°¡
+//11.28 ì¶”ê°€
 void MakeRandomPos(void)
 {
-	int Xarea = 100; // x¿µ¿ª ¹üÀ§ÁöÁ¤ 
-	int Yarea = 100; // y¿µ¿ª ¹üÀ§ÁöÁ¤
+	int Xarea = 800; // xì˜ì—­ ë²”ìœ„ì§€ì • 
+	int Yarea = 800; // yì˜ì—­ ë²”ìœ„ì§€ì •
 
 	int i, j;
 	int bFound;
-	int ObjPosNumber = 100; //·£´ıÁÂÇ¥ 100°³ ¹è¿­¿¡ ³ÖÀ½ 
+	int ObjPosNumber = 100; //ëœë¤ì¢Œí‘œ 100ê°œ ë°°ì—´ì— ë„£ìŒ 
 	srand((unsigned int)time(NULL));
 	for (i = 0; i < ObjPosNumber; ++i)
 	{
 		while (1)
 		{
-			x[i] = rand() % Xarea + 1;
-			y[i] = rand() % Yarea + 1;
+			x[i] = rand() % Xarea + 1 -400;
+			y[i] = rand() % Yarea + 1 -400;
 			bFound = 0;
-			// °°Àº°ªÀÌÀÖ´ÂÁöÈ®ÀÎÇÑ´Ù
+			// ê°™ì€ê°’ì´ìˆëŠ”ì§€í™•ì¸í•œë‹¤
 			for (j = 0; j < i; ++j)
 			{
-				// °°Àº°ªÀÌÀÖÀ¸¸é
+				// ê°™ì€ê°’ì´ìˆìœ¼ë©´
 				if (x[j] == x[i] || y[j] == y[i])
 				{
 					bFound = 1;
 					break;
 				}
 			}
-			// °°Àº°ªÀÌ¾øÀ¸¸éwhile¹®Å»Ãâ
+			// ê°™ì€ê°’ì´ì—†ìœ¼ë©´whileë¬¸íƒˆì¶œ
 			if (!bFound)
 			{
 				break;
@@ -172,7 +172,7 @@ void MakeRandomPos(void)
 }
 
 
-// ¼ÒÄÏ ÇÔ¼ö ¿À·ù Ãâ·Â ÈÄ Á¾·á
+// ì†Œì¼“ í•¨ìˆ˜ ì˜¤ë¥˜ ì¶œë ¥ í›„ ì¢…ë£Œ
 void err_quit(char *msg)
 {
 	LPVOID lpMsgBuf;
@@ -186,7 +186,7 @@ void err_quit(char *msg)
 	exit(1);
 }
 
-// ¼ÒÄÏ ÇÔ¼ö ¿À·ù Ãâ·Â
+// ì†Œì¼“ í•¨ìˆ˜ ì˜¤ë¥˜ ì¶œë ¥
 void err_display(char *msg)
 {
 	LPVOID lpMsgBuf;
@@ -224,10 +224,10 @@ int recvn(SOCKET s, char *buf, int len, int flags) {
 int main(int argc, char *argv[])
 {
 	int retval;
-	GameThread = CreateEvent(NULL, TRUE, FALSE, NULL);//ºñ½ÅÈ£ »óÅÂ·Î ½ÃÀÛ, ¼öµ¿ ¸®¼Â
+	GameThread = CreateEvent(NULL, TRUE, FALSE, NULL);//ë¹„ì‹ í˜¸ ìƒíƒœë¡œ ì‹œì‘, ìˆ˜ë™ ë¦¬ì…‹
 
 	server_waitroom.room_state = 0;
-	// À©¼Ó ÃÊ±âÈ­
+	// ìœˆì† ì´ˆê¸°í™”
 	WSADATA wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
 		return 1;
@@ -249,13 +249,13 @@ int main(int argc, char *argv[])
 	retval = listen(listen_sock, SOMAXCONN);
 	if (retval == SOCKET_ERROR) err_quit("listen()");
 
-	// µ¥ÀÌÅÍ Åë½Å¿¡ »ç¿ëÇÒ º¯¼ö
+	// ë°ì´í„° í†µì‹ ì— ì‚¬ìš©í•  ë³€ìˆ˜
 	SOCKET client_sock;
 	SOCKADDR_IN clientaddr;
 	int addrlen;
 	HANDLE hThread;
 
-	while (acp) {//acp ÇöÀç ÀÎ¿øÀÌ ´Ù Â÷ÀÖ´Â »óÅÂ¶ó¸é FALSE
+	while (acp) {//acp í˜„ì¬ ì¸ì›ì´ ë‹¤ ì°¨ìˆëŠ” ìƒíƒœë¼ë©´ FALSE
 				 // accept()
 		addrlen = sizeof(clientaddr);
 		client_sock = accept(listen_sock, (SOCKADDR *)&clientaddr, &addrlen);
@@ -264,16 +264,16 @@ int main(int argc, char *argv[])
 			break;
 		}
 
-		// Á¢¼ÓÇÑ Å¬¶óÀÌ¾ğÆ® Á¤º¸ Ãâ·Â
-		/*printf("\n[TCP ¼­¹ö] Å¬¶óÀÌ¾ğÆ® Á¢¼Ó: IP ÁÖ¼Ò=%s, Æ÷Æ® ¹øÈ£=%d\n",
+		// ì ‘ì†í•œ í´ë¼ì´ì–¸íŠ¸ ì •ë³´ ì¶œë ¥
+		/*printf("\n[TCP ì„œë²„] í´ë¼ì´ì–¸íŠ¸ ì ‘ì†: IP ì£¼ì†Œ=%s, í¬íŠ¸ ë²ˆí˜¸=%d\n",
 		inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));*/
 
-		AcceptClientSet(client_sock);// Å¬¶óÀÌ¾ğÆ® Á¢¼Ó½Ã id ºÎ¿©, Å¬·¡½º¿¡ ¼Â
-		manager.SendGameState(server_waitroom);// °ÔÀÓ »óÅÂ Àü¼Û
+		AcceptClientSet(client_sock);// í´ë¼ì´ì–¸íŠ¸ ì ‘ì†ì‹œ id ë¶€ì—¬, í´ë˜ìŠ¤ì— ì…‹
+		manager.SendGameState(server_waitroom);// ê²Œì„ ìƒíƒœ ì „ì†¡
 
-		//11.28Ãß°¡
+		//11.28ì¶”ê°€
 		if (acp) {
-			//°è¼Ó ¿ÀºêÁ§Æ®±×·ì ÁÖ°í¹Ş±â.
+			//ê³„ì† ì˜¤ë¸Œì íŠ¸ê·¸ë£¹ ì£¼ê³ ë°›ê¸°.
 			AcceptClientGameObject(client_sock, server_ob);
 			ObjStateCheck(server_ob);
 
@@ -283,7 +283,7 @@ int main(int argc, char *argv[])
 	// closesocket()
 	closesocket(listen_sock);
 
-	// À©¼Ó Á¾·á
+	// ìœˆì† ì¢…ë£Œ
 	WSACleanup();
 	return 0;
 }
@@ -291,33 +291,33 @@ int main(int argc, char *argv[])
 void AcceptClientSet(SOCKET s) {
 
 	int retval;
-	acp = manager.ClientsockSet(s);//¾ÆÁ÷ ÀÎ¿øÀÌ ´ú Ã¡À»¶§´Â acp -> TRUE
+	acp = manager.ClientsockSet(s);//ì•„ì§ ì¸ì›ì´ ëœ ì°¼ì„ë•ŒëŠ” acp -> TRUE
 
-	if (!acp) {//ÀÎ¿øÃÊ°ú
-		retval = send(s, (char*)&error_id, sizeof(int), 0);//ÀÎ¿øÃÊ°ú ½Ã ¾ÆÀÌµğ¿¡ -1 Àü¼Û
+	if (!acp) {//ì¸ì›ì´ˆê³¼
+		retval = send(s, (char*)&error_id, sizeof(int), 0);//ì¸ì›ì´ˆê³¼ ì‹œ ì•„ì´ë””ì— -1 ì „ì†¡
 		closesocket(s);
 		return;
 	}
 
-	retval = send(s, (char*)&client_id, sizeof(int), 0);//¾ÆÀÌµğ Àü¼Û
+	retval = send(s, (char*)&client_id, sizeof(int), 0);//ì•„ì´ë”” ì „ì†¡
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");
 	}
 
-	if (client_id == 0 && server_waitroom.room_state == 0) {//Ã¹¹øÂ° Å¬¶óÀÌ¾ğÆ®°¡ µé¾î¿ÔÀ»¶§
+	if (client_id == 0 && server_waitroom.room_state == 0) {//ì²«ë²ˆì§¸ í´ë¼ì´ì–¸íŠ¸ê°€ ë“¤ì–´ì™”ì„ë•Œ
 		retval = recvn(s, (char*)&server_waitroom, sizeof(server_waitroom), 0);//set waitroom
 																			   //server_waitroom.current_player = 1;
 																			   //server_waitroom.max_player = server_waitroom.max_player;
-																			   //server_waitroom.room_state = 1;//0: ¹æÀÌ ¾øÀ» ¶§ 1: ¹æÀÌ Á¸ÀçÇÔ 2: Ç®¹æÀÏ¶§
+																			   //server_waitroom.room_state = 1;//0: ë°©ì´ ì—†ì„ ë•Œ 1: ë°©ì´ ì¡´ì¬í•¨ 2: í’€ë°©ì¼ë•Œ
 		manager.SetWaitRoom(&server_waitroom);
 	}
 
 	client_id++;
 	printf("client ID : %d\n", client_id);
-	printf("¹æ ¼³Á¤À» ÀÔ·Â ¹Ş¾Ò½À´Ï´Ù. ÃÖ´ë ÀÎ¿ø %d\n", server_waitroom.max_player);
+	printf("ë°© ì„¤ì •ì„ ì…ë ¥ ë°›ì•˜ìŠµë‹ˆë‹¤. ìµœëŒ€ ì¸ì› %d\n", server_waitroom.max_player);
 }
 
-//11.28Ãß°¡ ÀüÃ¼µ¥ÀÌÅÍ¸¦ ¹Ş´Â´Ù.
+//11.28ì¶”ê°€ ì „ì²´ë°ì´í„°ë¥¼ ë°›ëŠ”ë‹¤.
 void AcceptClientGameObject(SOCKET s, ObjectGroup* GameObject)
 {
 	while (1) {
@@ -333,27 +333,27 @@ void AcceptClientGameObject(SOCKET s, ObjectGroup* GameObject)
 			err_display("recv()");
 			break;
 		}
-		//Å¬¶ó·ÎºÎÅÍ  GameObject±¸Á¶Ã¼Á¤º¸¹Ş°í ±¸Á¶Ã¼Çüº¯È¯ 
+		//í´ë¼ë¡œë¶€í„°  GameObjectêµ¬ì¡°ì²´ì •ë³´ë°›ê³  êµ¬ì¡°ì²´í˜•ë³€í™˜ 
 		GameObject = (ObjectGroup*)GameObject;
 	}
 
 
 }
-// Å¬¶óÀÌ¾ğÆ®¿Í µ¥ÀÌÅÍ Åë½Å
+// í´ë¼ì´ì–¸íŠ¸ì™€ ë°ì´í„° í†µì‹ 
 DWORD WINAPI SendRecvObjectInfo(LPVOID arg)
 {
 
 	SOCKET s = (SOCKET)arg;
 	int retval;
 	int cur_id;
-	Character rec_char = Character();//Ä³¸¯ÅÍ¸¦ ¹Ş¾Æ¿Ã ¹öÆÛ¿ë º¯¼ö ¼±¾ğ
+	Character rec_char = Character();//ìºë¦­í„°ë¥¼ ë°›ì•„ì˜¬ ë²„í¼ìš© ë³€ìˆ˜ ì„ ì–¸
 	CharacterBody* char_body;
-	//printf("´ë±âÁß\n");
+	//printf("ëŒ€ê¸°ì¤‘\n");
 
 	WaitForSingleObject(GameThread, INFINITE);
 
-	//event ÇÚµé 
-	//printf("½ÃÀÛ");
+	//event í•¸ë“¤ 
+	//printf("ì‹œì‘");
 	while (1) {
 		retval = recvn(s, (char *)&rec_char, sizeof(rec_char), 0);//recv
 		cur_id = rec_char.get_id();
@@ -361,7 +361,7 @@ DWORD WINAPI SendRecvObjectInfo(LPVOID arg)
 
 		manager.RecvClientCaracter(cur_id, char_body);
 
-		//´Ù¸¥ Å¬¶ó¸®¾ğÆ®·Î ºÎÅÍ ´Ù ¹Ş¾ÒÀ»¶§ ±îÁö wait ÇÒ ÇÊ¿äÀÖÀ½ 
+		//ë‹¤ë¥¸ í´ë¼ë¦¬ì–¸íŠ¸ë¡œ ë¶€í„° ë‹¤ ë°›ì•˜ì„ë•Œ ê¹Œì§€ wait í•  í•„ìš”ìˆìŒ 
 
 		retval = send(s, (char*)&server_ob, sizeof(server_ob), 0);//send
 	}
