@@ -8,8 +8,9 @@
 class Sock_manager {
 private:
 	SOCKET client[4];
-	HANDLE client_thread[4];
+	HANDLE client_thread[4];//스레드의 핸들
 	HANDLE event_thread[4];//스레드의 이벤트 핸들
+	HANDLE update_handle[4];//메인스레드의 계산 시작 시점을 알리는 이벤트 핸들
 	int current_player;
 	WaitRoom *wa = NULL;
 
@@ -26,6 +27,8 @@ public :
 	void RecvClientCaracter(int id, CharacterBody* ch);
 
 	void SendWait();
+	void MainWait();
 	void ResetEventthis(int id);
 	void SetEventthis(int id);
+	void SetUpdateHandle(int id);
 };

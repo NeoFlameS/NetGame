@@ -37,5 +37,5 @@ public:
 	//추가한 부분은 밑으로
 private:
 	WaitRoom r;
-	WaitRoom ConnectWaitRoom(SOCKET server);
+	void ConnectWaitRoom(SOCKET server);
 };

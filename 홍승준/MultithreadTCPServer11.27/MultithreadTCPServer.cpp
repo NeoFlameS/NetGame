@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 //#include "Object_struct.h"
 #include "SockManager.h"
 #define SERVERPORT 9000
@@ -13,10 +14,14 @@ ObjectGroup server_ob;//서버의 오브젝트 그룹
 Sock_manager manager = Sock_manager(&server_ob);//서버의 오브젝트 그룹의 포인터를 속 매니저에 등록
 WaitRoom server_waitroom;//서버의 대기방 변수
 
+
 bool acp = TRUE;//인원 초과시 FALSE
 HANDLE GameThread;//게임 쓰레드의 시작여부
+HANDLE create_handle;//쓰레드 생성 이벤트 
+HANDLE data_handle[4];
 DWORD WINAPI SendRecvObjectInfo(LPVOID arg);
 void AcceptClientSet(SOCKET s,HANDLE handle);
+void ObjectInit();
 // 소켓 함수 오류 출력 후 종료
 void err_quit(char *msg)
 {
@@ -70,7 +75,13 @@ int main(int argc, char *argv[])
 {
 	int retval;
 	GameThread = CreateEvent(NULL,TRUE,FALSE,NULL);//비신호 상태로 시작, 수동 리셋
-	
+	create_handle = CreateEvent(NULL, TRUE, FALSE, NULL);//비신호 상태로 시작, 수동 리셋
+	data_handle[0] = CreateEvent(NULL, FALSE, TRUE, NULL);//신호 상태로 시작, 자동 리셋
+	data_handle[1] = CreateEvent(NULL, FALSE, TRUE, NULL);//신호 상태로 시작, 자동 리셋
+	data_handle[2] = CreateEvent(NULL, FALSE, TRUE, NULL);//신호 상태로 시작, 자동 리셋
+	data_handle[3] = CreateEvent(NULL, FALSE, TRUE, NULL);//신호 상태로 시작, 자동 리셋
+	srand(time(NULL));
+	ObjectInit();
 	server_waitroom.room_state = 0;
 	// 윈속 초기화
 	WSADATA wsa;
@@ -114,8 +125,10 @@ int main(int argc, char *argv[])
 			inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));*/
 
 		hThread = CreateThread(NULL, 0, SendRecvObjectInfo, (LPVOID)client_sock, 0, NULL);
+		WaitForSingleObject(create_handle,INFINITE);
 
 		AcceptClientSet(client_sock,hThread);// 클라이언트 접속시 id 부여, 클래스에 셋
+		ResetEvent(create_handle);
 		manager.SendGameState(server_waitroom);// 게임 상태 전송
 
 		if (client_id == server_waitroom.max_player) {
@@ -131,7 +144,13 @@ int main(int argc, char *argv[])
 
 	bool running = TRUE;
 	while (TRUE) {
-		//게임 루프
+		manager.MainWait();
+		printf("MAIN_LOOP\n");
+		Sleep(1000);
+		SetEvent(data_handle[0]);
+		SetEvent(data_handle[1]);
+		SetEvent(data_handle[2]);
+		SetEvent(data_handle[3]);
 	}
 
 
@@ -143,33 +162,47 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-void AcceptClientSet(SOCKET s,HANDLE handle) {
-	
+void AcceptClientSet(SOCKET s, HANDLE handle) {
+
 	int retval;
 	acp = manager.ClientsockSet(s, handle);//아직 인원이 덜 찼을때는 acp -> TRUE
-	
+
 	if (!acp) {//인원초과
 		retval = send(s, (char*)&error_id, sizeof(int), 0);//인원초과 시 아이디에 -1 전송
 		closesocket(s);
 		return;
 	}
 
-	retval = send(s,(char*)&client_id,sizeof(int),0);//아이디 전송
+	retval = send(s, (char*)&client_id, sizeof(int), 0);//아이디 전송
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");
 	}
 
 	if (client_id == 0 && server_waitroom.room_state == 0) {//첫번째 클라이언트가 들어왔을때
 		retval = recvn(s, (char*)&server_waitroom, sizeof(server_waitroom), 0);//set waitroom
+		if (retval == SOCKET_ERROR) {
+			err_display("send()");
+		}
 		//server_waitroom.current_player = 1;
 		//server_waitroom.max_player = server_waitroom.max_player;
 		//server_waitroom.room_state = 1;//0: 방이 없을 때 1: 방이 존재함 2: 풀방일때
 		manager.SetWaitRoom(&server_waitroom);
+		printf("방 설정을 입력 받았습니다. 최대 인원 %d\n", server_waitroom.max_player);
 	}
-	
+	else
+	{
+		retval = send(s, (char*)&server_waitroom, sizeof(server_waitroom), 0);//set waitroom
+		if (retval == SOCKET_ERROR) {
+			err_display("send()");
+		}
+		/*retval = recvn(s, (char*)&server_waitroom, sizeof(server_waitroom), 0);
+		if (retval == SOCKET_ERROR) {
+			err_display("send()");
+		}*/
+	}
 	client_id++;
 	printf("client ID : %d\n", client_id);
-	printf("방 설정을 입력 받았습니다. 최대 인원 %d\n",server_waitroom.max_player);
+	
 }
 
 
@@ -179,17 +212,23 @@ DWORD WINAPI SendRecvObjectInfo(LPVOID arg)
 
 	SOCKET s = (SOCKET)arg;
 	int retval;
-	int cur_id;
+	int cur_id=client_id;//현재 쓰레드를 생성한 클라이언트의 아이디를 받아옴
+	SetEvent(create_handle);
 	Character rec_char = Character();//캐릭터를 받아올 버퍼용 변수 선언
 	CharacterBody* char_body;
-	printf("대기중\n");
+	printf("%d 스레드 대기중\n",cur_id);
 
 	WaitForSingleObject(GameThread,INFINITE);
-	
+	printf("%d 스레드 시작\n", cur_id);
+
+	retval = send(s, (char*)&server_ob, sizeof(server_ob), 0);//12.07 게임 시작시 제일 캐릭터, 장애물, 먹이 클래스를 전부 초기화 하고 정보 전송
+	if (retval == SOCKET_ERROR) {
+		err_display("send()");
+	}
 	//event 핸들 
 	
 	while(1){
-	printf("시작");
+		WaitForSingleObject(data_handle[cur_id],INFINITE);
 	retval = recvn(s,(char *)&rec_char,sizeof(rec_char),0);//recv
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");
@@ -198,17 +237,24 @@ DWORD WINAPI SendRecvObjectInfo(LPVOID arg)
 	cur_id = rec_char.get_id();
 	char_body = rec_char.get_body();
 
-	manager.RecvClientCaracter(cur_id,char_body);
+	//manager.RecvClientCaracter(cur_id,char_body);
 	manager.SetEventthis(cur_id);
+	printf("%d 번 이벤트 셋\n", cur_id);
 
 	//다른 클라리언트로 부터 다 받았을때 까지 wait 할 필요있음 
+	printf("%d 센드왜잇\n",cur_id);
 	manager.SendWait();//WaitForMultipleObjects() 를 실행하는 메소드 호출
+	printf("%d 센드왜잇 끝\n", cur_id);
 
 	retval = send(s, (char*)&server_ob, sizeof(server_ob), 0);//send
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");}
+
 	//send 이후에 리셋
+	Sleep(100);
 	manager.ResetEventthis(cur_id);
+	manager.SetUpdateHandle(cur_id);
+	printf("%d 번 이벤트 리셋\n", cur_id);
 
 	}
 
@@ -216,3 +262,25 @@ DWORD WINAPI SendRecvObjectInfo(LPVOID arg)
 	return 0;
 }
 
+void ObjectInit() {//12.07 오브젝트 초기화
+	int i = 0;
+	POINT temp;
+
+	for(i=0; i<4; i++){//캐릭터 초기화 -300 ~ 300까지
+		temp.x = (i % 2) * 600 - 300;
+		temp.y = 300 - (i % 2) * 600;
+		server_ob.player[i] = Character(i,temp);
+	}
+
+	for (i = 0; i < MAX_FOOD; i++) {//먹이 초기화 -350~ 350까지
+		temp.x = (rand() % 700)-350;
+		temp.y = (rand() % 700)-350;
+		server_ob.food[i] = Food(0.0,temp);
+	}
+
+	for (i = 0; i < MAX_OBSTACLE; i++) {//장애물 초기화
+		temp.x = (rand() % 700) - 350;
+		temp.y = (rand() % 700) - 350;
+		server_ob.obs[i] = Obstacle(0.0,temp);
+	}
+}

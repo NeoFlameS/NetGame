@@ -25,9 +25,7 @@ int recvn(SOCKET s, char *buf, int len, int flags) {
 	return (len - left);
 }
 
-WaitRoom Object_Manager::ConnectWaitRoom(SOCKET server) {
-
-	WaitRoom r;
+void Object_Manager::ConnectWaitRoom(SOCKET server) {
 
 	int retval = recvn(server,(char*)&Client_ID,sizeof(int),0);
 	if (retval == SOCKET_ERROR) {
@@ -49,8 +47,6 @@ WaitRoom Object_Manager::ConnectWaitRoom(SOCKET server) {
 		retval = send(server, (char*)&r, sizeof(r), 0);//설정한 방 정보 전송
 		if (retval == SOCKET_ERROR) err_quit("send()");
 	}
-
-	return r;
 
 }
 

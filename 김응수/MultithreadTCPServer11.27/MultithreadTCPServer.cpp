@@ -229,3 +229,12 @@ DWORD WINAPI SendRecvObjectInfo(LPVOID arg)
 	return 0;
 }
 
+void ObjectInit() {
+	int i = 0;
+	POINT temp;
+	for(i=0; i<4; i++){
+		temp.x = (i % 2) * 600 - 300;
+		temp.y = 300 - (i % 2) * 600;
+		server_ob.player[i] = Character(i,temp);
+	}
+}
