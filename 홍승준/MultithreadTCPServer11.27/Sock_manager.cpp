@@ -5,10 +5,10 @@ Sock_manager::Sock_manager(ObjectGroup* ob) {
 	this->GameObject = ob;
 	int i = 0;
 	for (i = 0; i < 4; i++) {
-		this->event_thread[i] = CreateEvent(NULL, TRUE, FALSE, NULL);//¼öµ¿ ¸®¼Â, ºñ½ÅÈ£ ½ÃÀÛ
+		this->event_thread[i] = CreateEvent(NULL, TRUE, FALSE, NULL);//ìˆ˜ë™ ë¦¬ì…‹, ë¹„ì‹ í˜¸ ì‹œì‘
 	}
 	for (i = 0; i < 4; i++) {
-		this->update_handle[i] = CreateEvent(NULL, FALSE, FALSE, NULL);//ÀÚµ¿ ¸®¼Â, ºñ½ÅÈ£ ½ÃÀÛ
+		this->update_handle[i] = CreateEvent(NULL, FALSE, FALSE, NULL);//ìë™ ë¦¬ì…‹, ë¹„ì‹ í˜¸ ì‹œì‘
 	}
 
 }
@@ -16,10 +16,10 @@ Sock_manager::Sock_manager(ObjectGroup* ob) {
 bool Sock_manager::ClientsockSet(SOCKET s, HANDLE handle) {
 	
 	if (this->wa == NULL && this->current_player > 3) { 
-		return FALSE; // 4¸í ÀÌ»óÀÌ Á¢¼ÓÇÒ ¶§´Â FALSE ¸®ÅÏ
+		return FALSE; // 4ëª… ì´ìƒì´ ì ‘ì†í•  ë•ŒëŠ” FALSE ë¦¬í„´
 	} 
 	else if (this->wa != NULL) {
-		if(this->wa->max_player < this->current_player){//¹æ¿¡ ¼³Á¤µÈ ÃÖ´ë ÀÎ¿øº¸´Ù ¸¹Àº ÇÃ·¹ÀÌ¾î°¡ Á¢¼ÓÇÒ¶§µµ FALSE ¸®ÅÏ
+		if(this->wa->max_player < this->current_player){//ë°©ì— ì„¤ì •ëœ ìµœëŒ€ ì¸ì›ë³´ë‹¤ ë§ì€ í”Œë ˆì´ì–´ê°€ ì ‘ì†í• ë•Œë„ FALSE ë¦¬í„´
 			return FALSE;
 		}
 	}
@@ -78,4 +78,12 @@ void Sock_manager::SetEventthis(int id) {
 
 void Sock_manager::SetUpdateHandle(int id) {
 	SetEvent(this->update_handle[id]);
+}
+
+int Sock_manager::DisconnectClient(SOCKET s, int id) //12.07 
+{	
+	int  retval;
+	int i =0;
+	retval = closesocket(this->client[id]);
+	return retval;       		
 }
