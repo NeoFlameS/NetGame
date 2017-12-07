@@ -8,9 +8,9 @@
 class Sock_manager {
 private:
 	SOCKET client[4];
-	HANDLE client_thread[4];//½º·¹µåÀÇ ÇÚµé
-	HANDLE event_thread[4];//½º·¹µåÀÇ ÀÌº¥Æ® ÇÚµé
-	HANDLE update_handle[4];//¸ŞÀÎ½º·¹µåÀÇ °è»ê ½ÃÀÛ ½ÃÁ¡À» ¾Ë¸®´Â ÀÌº¥Æ® ÇÚµé
+	HANDLE client_thread[4];//ìŠ¤ë ˆë“œì˜ í•¸ë“¤
+	HANDLE event_thread[4];//ìŠ¤ë ˆë“œì˜ ì´ë²¤íŠ¸ í•¸ë“¤
+	HANDLE update_handle[4];//ë©”ì¸ìŠ¤ë ˆë“œì˜ ê³„ì‚° ì‹œì‘ ì‹œì ì„ ì•Œë¦¬ëŠ” ì´ë²¤íŠ¸ í•¸ë“¤
 	int current_player;
 	WaitRoom *wa = NULL;
 
@@ -31,4 +31,8 @@ public :
 	void ResetEventthis(int id);
 	void SetEventthis(int id);
 	void SetUpdateHandle(int id);
+	//12.07 
+	int DisconnectClient(SOCKET s, int id);
+	
+	
 };
