@@ -1,4 +1,1 @@
-﻿  ObjectManager.cpp
-c:\netgame\netgame\김응수\simplegame11.27\simplegame\character.h(5): warning C4005: 'MAX_BODY_LENGTH': 매크로 재정의
-  c:\netgame\netgame\김응수\simplegame11.27\simplegame\object_struct.h(2): note: 'MAX_BODY_LENGTH'의 이전 정의를 참조하십시오.
-  SimpleGame.vcxproj -> C:\NetGame\NetGame\김응수\SimpleGame11.27\x64\Debug\SimpleGame.exe
+﻿  SimpleGame.vcxproj -> C:\Users\Kim Eung Su\Desktop\넷겜플최신\새 폴더\SimpleGame11.27\x64\Debug\SimpleGame.exe
