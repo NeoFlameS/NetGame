@@ -222,7 +222,7 @@ DWORD WINAPI SendRecvObjectInfo(LPVOID arg)
 	printf("%d 스레드 시작\n", cur_id);
 
 	for(i=0; i<server_waitroom.max_player;i++){
-		retval = send(s, (char*)&server_ob.player[i], sizeof(server_ob), 0);//12.07 게임 시작시 모든 플레이어의 캐릭터 정보 전송
+		retval = send(s, (char*)&server_ob.player[i], sizeof(Character), 0);//12.07 게임 시작시 모든 플레이어의 캐릭터 정보 전송
 		if (retval == SOCKET_ERROR) {
 			err_display("초기화 정보 전송 부분");
 		}

@@ -19,7 +19,7 @@ struct WaitRoom
 
 struct ObjectGroup
 {
- Character		player[MAX_CHARACTER];
- Obstacle		obs[MAX_OBSTACLE];
- Food			food[MAX_FOOD];
+	Character player[MAX_CHARACTER];
+	Obstacle obs[MAX_OBSTACLE];
+	Food food[MAX_FOOD];
 };

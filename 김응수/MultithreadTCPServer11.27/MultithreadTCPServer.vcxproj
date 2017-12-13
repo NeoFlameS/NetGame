@@ -77,7 +77,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Charactercpp.cpp" />
+    <ClCompile Include="Character.cpp" />
     <ClCompile Include="Food.cpp" />
     <ClCompile Include="MultithreadTCPServer.cpp" />
     <ClCompile Include="Obstacle.cpp" />

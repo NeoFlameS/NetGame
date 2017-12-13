@@ -7,6 +7,10 @@ Sock_manager::Sock_manager(ObjectGroup* ob) {
 	for (i = 0; i < 4; i++) {
 		this->event_thread[i] = CreateEvent(NULL, TRUE, FALSE, NULL);//수동 리셋, 비신호 시작
 	}
+	for (i = 0; i < 4; i++) {
+		this->update_handle[i] = CreateEvent(NULL, FALSE, FALSE, NULL);//자동 리셋, 비신호 시작
+	}
+
 }
 
 bool Sock_manager::ClientsockSet(SOCKET s, HANDLE handle) {
@@ -59,13 +63,19 @@ void Sock_manager::RecvClientCaracter(int id, CharacterBody* ch) {
 }
 
 void Sock_manager::SendWait() {
-	WaitForMultipleObjects(this->current_player,this->event_thread,TRUE,100);
+	WaitForMultipleObjects(this->current_player,this->event_thread,TRUE,INFINITE);
 }
-
+void Sock_manager::MainWait() {
+	WaitForMultipleObjects(this->current_player, this->update_handle, TRUE, INFINITE);
+}
 void Sock_manager::ResetEventthis(int id) {
 	ResetEvent(this->event_thread[id]);
 }
 
 void Sock_manager::SetEventthis(int id) {
 	SetEvent(this->event_thread[id]);
+}
+
+void Sock_manager::SetUpdateHandle(int id) {
+	SetEvent(this->update_handle[id]);
 }
