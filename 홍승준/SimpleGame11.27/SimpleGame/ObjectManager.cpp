@@ -25,9 +25,7 @@ int recvn(SOCKET s, char *buf, int len, int flags) {
 	return (len - left);
 }
 
-WaitRoom Object_Manager::ConnectWaitRoom(SOCKET server) {
-
-	WaitRoom r;
+void Object_Manager::ConnectWaitRoom(SOCKET server) {
 
 	int retval = recvn(server,(char*)&Client_ID,sizeof(int),0);
 	if (retval == SOCKET_ERROR) {
@@ -42,20 +40,22 @@ WaitRoom Object_Manager::ConnectWaitRoom(SOCKET server) {
 
 	if (Client_ID == 0) { // 처음 접속시 방설정  
 		printf("방의 인원수를 설정 하십시오.\n");
-		scanf_s("%d", &r.max_player);
-		r.current_player = 1;
-		r.room_state = 1;
+		scanf_s("%d", &wr.max_player);
+		wr.current_player = 1;
+		wr.room_state = 1;
 
-		retval = send(server, (char*)&r, sizeof(r), 0);//설정한 방 정보 전송
+		retval = send(server, (char*)&wr, sizeof(wr), 0);//설정한 방 정보 전송
 		if (retval == SOCKET_ERROR) err_quit("send()");
 	}
-
-	return r;
 
 }
 
 Object_Manager::Object_Manager()
 {
+	int i = 0;
+	for (i = 0; i < 4; i++) {
+		this->player[i] = Character();
+	}
 	//all_object.player;
 	this->gamewait =  TRUE;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) exit(1);
@@ -79,23 +79,40 @@ Object_Manager::Object_Manager()
 
 void Object_Manager::Update(float time)
 {
-	printf("%f \n", time);
+	//printf("%f \n", time);
 }
 void Object_Manager::DrawAll()
 {
 	return;
 }
 
-void Object_Manager::RecvGameData(SOCKET s)
+void Object_Manager::RecvGameData()
 {
+	int i = 0;
+	for(i = 0; i<wr.max_player; i++){
+	retval = recvn(this->sock, (char *)&player[i], sizeof(Character), 0);
+	if (retval == SOCKET_ERROR) {
+		err_quit("캐릭터 정보 수신");
+	}
+	}
+	printf("캐릭터 정보 수신 완료\n");
+	for (i = 0; i < wr.max_player; i++) {
+		printf("%d %d %d %d\n", player[i].get_body()->locate.x, player[i].get_body()->locate.y, player[i].get_id(), Client_ID);
+	}
+	
 	return;
 }
-void Object_Manager::SendGameData(SOCKET s)
+void Object_Manager::SendGameData()
 {
+	retval = send(this->sock, (char *)&player[this->Client_ID], sizeof(Character),0);
+	if (retval == SOCKET_ERROR) {
+		err_quit("캐릭터 정보 전송");
+	}
 	return;
 }
 
 void Object_Manager::RecvGameState() {
+	while(1){
 	retval = recvn(this->sock,(char *)&wr,sizeof(wr),0);
 	if (retval == SOCKET_ERROR) {
 		err_quit("recv()");
@@ -103,6 +120,8 @@ void Object_Manager::RecvGameState() {
 	if (wr.current_player == wr.max_player) {
 		this->gamewait = FALSE;
 		printf("시작");
+		break;
+	}
 	}
 }
 

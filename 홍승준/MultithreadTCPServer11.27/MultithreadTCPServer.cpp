@@ -217,21 +217,24 @@ DWORD WINAPI SendRecvObjectInfo(LPVOID arg)
 	Character rec_char = Character();//캐릭터를 받아올 버퍼용 변수 선언
 	CharacterBody* char_body;
 	printf("%d 스레드 대기중\n",cur_id);
-
+	int i = 0;
 	WaitForSingleObject(GameThread,INFINITE);
 	printf("%d 스레드 시작\n", cur_id);
 
-	retval = send(s, (char*)&server_ob, sizeof(server_ob), 0);//12.07 게임 시작시 제일 캐릭터, 장애물, 먹이 클래스를 전부 초기화 하고 정보 전송
-	if (retval == SOCKET_ERROR) {
-		err_display("send()");
+	for(i=0; i<server_waitroom.max_player;i++){
+		retval = send(s, (char*)&server_ob.player[i], sizeof(server_ob), 0);//12.07 게임 시작시 모든 플레이어의 캐릭터 정보 전송
+		if (retval == SOCKET_ERROR) {
+			err_display("초기화 정보 전송 부분");
+		}
 	}
+	printf("초기화 정보 전송 완료\n");
 	//event 핸들 
 	
 	while(1){
 		WaitForSingleObject(data_handle[cur_id],INFINITE);
 	retval = recvn(s,(char *)&rec_char,sizeof(rec_char),0);//recv
 	if (retval == SOCKET_ERROR) {
-		err_display("send()");
+		err_display("플레이어 캐릭터 수신 부분");
 	}
 
 	cur_id = rec_char.get_id();

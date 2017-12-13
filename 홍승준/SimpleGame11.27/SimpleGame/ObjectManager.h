@@ -19,6 +19,8 @@ class Object_Manager {
 	int cur_obstacle;
 	int cur_resuorce;
 
+	Character player[4];
+
 	int retval;
 	WSADATA wsa;
 	SOCKADDR_IN serveraddr;
@@ -29,13 +31,13 @@ public:
 	Object_Manager();
 	void Update(float time);
 	void DrawAll();
-	void RecvGameData(SOCKET s);
-	void SendGameData(SOCKET s);
+	void RecvGameData();
+	void SendGameData();
 	void err_quit(char *msg);
 	void err_display(char *msg);
 	void RecvGameState();
 	//추가한 부분은 밑으로
 private:
-	WaitRoom r;
-	WaitRoom ConnectWaitRoom(SOCKET server);
+	//WaitRoom r;
+	void ConnectWaitRoom(SOCKET server);
 };

@@ -137,7 +137,7 @@ int main(int argc, char **argv)
 
 	Object_Manager Ob = Object_Manager();
 	Ob.RecvGameState();
-
+	Ob.RecvGameData();
 
 	glutDisplayFunc(RenderScene);
 	glutIdleFunc(Idle);
